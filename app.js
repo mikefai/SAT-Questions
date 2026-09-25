@@ -1,13 +1,14 @@
 // SAT 2026 Master Webpage Application Controller
-// Ergonomic 2-Column UI with Hard-Tier Question Bank & Real-time Diagnostic Hub
+// Ergonomic 2-Column UI with Multi-Question Practice Bank & Real-time Diagnostic Hub
 
 let appState = {
   activePage: 'blueprint',
-  blueprintChartView: 'domain', // 'domain' or 'section'
-  selectedSubject: 'all',       // 'all', 'Reading and Writing', 'Math'
+  blueprintChartView: 'domain',
+  selectedSubject: 'all',
   selectedDomain: 'all',
   searchQuery: '',
-  mistakes: []
+  mistakes: [],
+  activeQuestionIndex: {} // Track active question index (0 or 1) per question type id
 };
 
 let blueprintChartInstance = null;
@@ -219,7 +220,6 @@ function initDomainFilters() {
 function setSubjectFilter(subject) {
   appState.selectedSubject = subject;
   
-  // Update segmented control buttons
   const btnAll = document.getElementById('btn-sub-all');
   const btnRW = document.getElementById('btn-sub-rw');
   const btnMath = document.getElementById('btn-sub-math');
@@ -368,6 +368,9 @@ function createQuestionCardHTML(q) {
   const isRW = q.section === 'Reading and Writing';
   const badgeColor = isRW ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200';
   const borderHighlight = isRW ? 'border-l-4 border-l-blue-600' : 'border-l-4 border-l-purple-600';
+  
+  const activeIdx = appState.activeQuestionIndex[q.id] || 0;
+  const sampleQ = q.sampleQuestions ? q.sampleQuestions[activeIdx] : null;
 
   return `
     <div class="q-card bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden ${borderHighlight} transition-all" id="card-${q.id}">
@@ -466,56 +469,93 @@ function createQuestionCardHTML(q) {
           </div>
         </div>
 
-        <!-- HARD-TIER PRACTICE CHALLENGE (INTERACTIVE QUIZ) -->
-        <div class="bg-white rounded-2xl border-2 border-slate-200 p-5 sm:p-6 shadow-xs relative">
-          
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500 text-white flex items-center gap-1">
-                <i data-lucide="flame" class="w-3 h-3"></i> Hard-Tier Challenge
-              </span>
-              <span class="text-xs text-slate-500 font-medium">Module 2 750+ Benchmark</span>
-            </div>
+        <!-- HARD-TIER PRACTICE CHALLENGE (WITH QUESTION 1 / QUESTION 2 SWITCHER) -->
+        ${sampleQ ? `
+          <div class="bg-white rounded-2xl border-2 border-slate-200 p-5 sm:p-6 shadow-xs relative" id="practice-block-${q.id}">
             
-            <button onclick="logThisQuestionType('${q.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 hover:underline">
-              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Log as Practice Error
-            </button>
-          </div>
-
-          <div class="space-y-4">
-            <!-- Passage / Math Problem text -->
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 font-serif text-slate-900 text-xs sm:text-sm whitespace-pre-line leading-relaxed">
-              ${q.sampleQuestion.passage}
-            </div>
-
-            <p class="font-bold text-slate-900 text-xs sm:text-sm">${q.sampleQuestion.stem}</p>
-
-            <!-- Choices -->
-            <div class="space-y-2" id="choices-container-${q.id}">
-              ${q.sampleQuestion.choices.map(choice => `
-                <button onclick="checkSampleAnswer('${q.id}', '${choice.replace(/'/g, "\\'")}')" 
-                        class="choice-btn w-full text-left p-3 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-medium text-slate-800 choice-btn-${q.id}">
-                  ${choice}
-                </button>
-              `).join('')}
-            </div>
-
-            <!-- Instant Solution & Detailed Explanation -->
-            <div id="explanation-${q.id}" class="hidden mt-4 p-4 rounded-xl bg-slate-900 text-white space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                  <i data-lucide="check-circle-2" class="w-4 h-4"></i> Correct Answer: ${q.sampleQuestion.correctAnswer}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500 text-white flex items-center gap-1">
+                  <i data-lucide="flame" class="w-3 h-3"></i> Hard-Tier Challenge
                 </span>
+                
+                <!-- Question 1 / Question 2 Selector Switcher -->
+                <div class="inline-flex p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs font-bold ml-2">
+                  <button onclick="switchChallengeQuestion('${q.id}', 0)" 
+                          class="px-2.5 py-1 rounded-md transition ${activeIdx === 0 ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+                    Q1
+                  </button>
+                  <button onclick="switchChallengeQuestion('${q.id}', 1)" 
+                          class="px-2.5 py-1 rounded-md transition ${activeIdx === 1 ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+                    Q2
+                  </button>
+                </div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">${q.sampleQuestion.explanation}</p>
+              
+              <button onclick="logThisQuestionType('${q.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 hover:underline self-start sm:self-auto">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Log as Practice Error
+              </button>
             </div>
-          </div>
 
-        </div>
+            <div class="space-y-4">
+              <!-- Passage / Problem statement -->
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 font-serif text-slate-900 text-xs sm:text-sm whitespace-pre-line leading-relaxed">
+                ${sampleQ.passage}
+              </div>
+
+              <p class="font-bold text-slate-900 text-xs sm:text-sm">${sampleQ.stem}</p>
+
+              <!-- Choices -->
+              <div class="space-y-2" id="choices-container-${q.id}">
+                ${sampleQ.choices.map(choice => `
+                  <button onclick="checkSampleAnswer('${q.id}', '${choice.replace(/'/g, "\\'")}', ${activeIdx})" 
+                          class="choice-btn w-full text-left p-3 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-medium text-slate-800 choice-btn-${q.id}">
+                    ${choice}
+                  </button>
+                `).join('')}
+              </div>
+
+              <!-- Instant Solution & Detailed Explanation -->
+              <div id="explanation-${q.id}" class="hidden mt-4 p-4 rounded-xl bg-slate-900 text-white space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> Correct Answer: ${sampleQ.correctAnswer}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">${sampleQ.explanation}</p>
+              </div>
+            </div>
+
+          </div>
+        ` : ''}
 
       </div>
     </div>
   `;
+}
+
+function switchChallengeQuestion(questionTypeId, newIndex) {
+  appState.activeQuestionIndex[questionTypeId] = newIndex;
+  
+  // Re-render this specific question card or all cards
+  const card = document.getElementById(`card-${questionTypeId}`);
+  if (card) {
+    const q = SAT_2026_DATA.questionTypes.find(item => item.id === questionTypeId);
+    if (q) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = createQuestionCardHTML(q);
+      const newCard = tempDiv.firstElementChild;
+      
+      // Preserve open state
+      const wasOpen = !document.getElementById(`body-${questionTypeId}`).classList.contains('hidden');
+      if (wasOpen) {
+        newCard.querySelector(`#body-${questionTypeId}`).classList.remove('hidden');
+        newCard.querySelector(`#icon-${questionTypeId}`).style.transform = 'rotate(180deg)';
+      }
+      card.replaceWith(newCard);
+      lucide.createIcons();
+    }
+  }
 }
 
 function toggleQuestionCard(cardId) {
@@ -548,9 +588,12 @@ function expandAllQuestionCards(expand) {
   });
 }
 
-function checkSampleAnswer(questionId, selectedChoice) {
+function checkSampleAnswer(questionId, selectedChoice, qIdx = 0) {
   const q = SAT_2026_DATA.questionTypes.find(item => item.id === questionId);
-  if (!q) return;
+  if (!q || !q.sampleQuestions) return;
+
+  const currentQ = q.sampleQuestions[qIdx];
+  if (!currentQ) return;
 
   const explBox = document.getElementById(`explanation-${questionId}`);
   if (explBox) {
@@ -560,7 +603,7 @@ function checkSampleAnswer(questionId, selectedChoice) {
   const buttons = document.querySelectorAll(`.choice-btn-${questionId}`);
   buttons.forEach(btn => {
     const text = btn.textContent.trim();
-    if (text === q.sampleQuestion.correctAnswer) {
+    if (text === currentQ.correctAnswer) {
       btn.className = "choice-btn w-full text-left p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm";
     } else if (text === selectedChoice) {
       btn.className = "choice-btn w-full text-left p-3 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium text-xs sm:text-sm";
@@ -593,7 +636,6 @@ function calculateWeakSpotMetrics() {
   const countsByReason = {};
 
   appState.mistakes.forEach(m => {
-    // Type counts
     if (!countsByType[m.questionTypeId]) {
       countsByType[m.questionTypeId] = {
         id: m.questionTypeId,
@@ -605,10 +647,7 @@ function calculateWeakSpotMetrics() {
     }
     countsByType[m.questionTypeId].count += 1;
 
-    // Domain counts
     countsByDomain[m.domain] = (countsByDomain[m.domain] || 0) + 1;
-
-    // Reason counts
     const reasonKey = m.errorReason || 'Other';
     countsByReason[reasonKey] = (countsByReason[reasonKey] || 0) + 1;
   });
