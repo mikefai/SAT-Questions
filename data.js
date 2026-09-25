@@ -723,16 +723,16 @@ const SAT_2026_DATA = {
           id: "math-leq1-q2",
           label: "Challenge Question 2",
           difficultyLevel: "Hard",
-          passage: "Consider the equation:\n\\(\\frac{2}{5}(15x - 20) + c = 4(3x - 1) - 4\\)\nIn the given equation, c is a constant. If the equation has infinitely many real solutions, what is the value of c?",
+          passage: "Consider the equation:\n\\(\\frac{2}{3}(6x - 9) + c = 4x - 6\\)\nIn the given equation, c is a constant. If the equation has infinitely many real solutions, what is the value of c?",
           stem: "What is the value of c?",
           choices: [
-            "A) -8",
+            "A) -6",
             "B) 0",
             "C) 4",
-            "D) 8"
+            "D) 6"
           ],
           correctAnswer: "B) 0",
-          explanation: "Expand the left side: (2/5)(15x) - (2/5)(20) + c = 6x - 8 + c.\nExpand the right side: 12x? Wait: (2/5)(15x) = 6x. Let's check 2(3x - 1) -> 6x - 2 - 6 = 6x - 8.\nRight side: 6x - 8. Left side: 6x - 8 + c.\nFor infinitely many solutions, both sides must be identical:\n6x - 8 + c = 6x - 8 => c = 0."
+          explanation: "Expand the left side: (2/3)(6x) - (2/3)(9) + c = 4x - 6 + c.\nThe right side is 4x - 6.\nFor the equation to have infinitely many real solutions, both sides must be identical for all values of x:\n4x - 6 + c = 4x - 6 => c = 0."
         }
       ]
     },
@@ -830,7 +830,7 @@ const SAT_2026_DATA = {
           id: "math-sys-q2",
           label: "Challenge Question 2",
           difficultyLevel: "Hard",
-          passage: "System of equations:\n\\(3x + 5y = 29\\)\n\\(2x - 3y = 7\\)",
+          passage: "System of equations:\n\\(3x + 5y = 31\\)\n\\(2x - 3y = 8\\)",
           stem: "If (x, y) is the solution to the given system of equations, what is the value of \\(x^2 - y^2\\)?",
           choices: [
             "A) 24",
@@ -839,7 +839,7 @@ const SAT_2026_DATA = {
             "D) 64"
           ],
           correctAnswer: "B) 45",
-          explanation: "Solve the system using elimination:\nMultiply eq 1 by 3: 9x + 15y = 87\nMultiply eq 2 by 5: 10x - 15y = 35\nAdd equations: 19x = 122... wait, 87 + 35 = 122? 122/19 is not an integer. Let's check 3x + 5y = 29: with (8, 1): 24 + 5 = 29, and 2(8) - 3(1) = 16 - 3 = 13. With 2x - 3y = 1: 3x + 5y = 29 and 2x - 3y = 0? With (7, 2): 3(7)+5(2)=31; 2(7)-3(2)=8.\nLet (7, 2): 2(7) - 3(2) = 8. Then x^2 - y^2 = 49 - 4 = 45.\nWith (7, 2): 3(7) + 5(2) = 31, 2(7) - 3(2) = 8 => x = 7, y = 2 => x^2 - y^2 = 49 - 4 = 45."
+          explanation: "Solve the system using elimination:\nMultiply equation 1 by 3: 9x + 15y = 93\nMultiply equation 2 by 5: 10x - 15y = 40\nAdd equations: 19x = 133 => x = 7.\nSubstitute x = 7 into equation 1: 3(7) + 5y = 31 => 21 + 5y = 31 => 5y = 10 => y = 2.\nThe solution is (7, 2).\nThe question asks for the value of x^2 - y^2:\nx^2 - y^2 = 7^2 - 2^2 = 49 - 4 = 45."
         }
       ]
     },
@@ -1350,3 +1350,11 @@ const SAT_2026_DATA = {
     }
   ]
 };
+
+// Cross-environment export for browser window and Node.js testing
+if (typeof window !== 'undefined') {
+  window.SAT_2026_DATA = SAT_2026_DATA;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = SAT_2026_DATA;
+}
