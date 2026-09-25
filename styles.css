@@ -1,99 +1,128 @@
-/* Custom styles and enhancements for SAT 2026 Master Hub */
+/* Modern Ergonomic UI Styles for SAT 2026 Master Hub */
 
 :root {
-  --primary-blue: #2563eb;
-  --primary-purple: #7c3aed;
-  --accent-emerald: #059669;
-  --accent-rose: #e11d48;
-  --accent-amber: #d97706;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-primary: #1d4ed8;
+  --color-rw: #2563eb;
+  --color-math: #7e22ce;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-sans);
   background-color: #f8fafc;
   color: #0f172a;
+  scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Glassmorphism elements */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+/* Smooth Transitions */
+* {
+  -webkit-font-smoothing: antialiased;
 }
 
-.gradient-header {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+/* Navigation Tab Active State */
+.main-nav-tab {
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.gradient-rw {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-left: 4px solid #2563eb;
-}
-
-.gradient-math {
-  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-  border-left: 4px solid #9333ea;
-}
-
-/* Navigation tab animations */
-.nav-tab {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-tab.active {
+.main-nav-tab.active {
   background-color: #ffffff;
   color: #1d4ed8;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08), 0 1px 4px -1px rgba(0, 0, 0, 0.04);
+  font-weight: 700;
 }
 
-/* Card hover transitions */
-.hover-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+.main-nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  background-color: #1d4ed8;
+  border-radius: 9999px;
 }
 
-.hover-card:hover {
+/* Sub-filter chips */
+.filter-chip {
+  transition: all 0.15s ease;
+}
+.filter-chip.active {
+  background-color: #1e293b;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Interactive Choice Buttons */
+.choice-btn {
+  transition: all 0.15s ease-in-out;
+}
+.choice-btn:hover:not(:disabled) {
+  border-color: #93c5fd;
+  background-color: #f0f7ff;
+  transform: translateX(3px);
+}
+
+/* Sticky Rail & Floating Controls */
+.sticky-rail {
+  position: sticky;
+  top: 5rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+
+/* Card Glow and Hover Elevation */
+.q-card {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
+}
+.q-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.03);
 }
 
-/* Question Type Detail Accordion / Expand */
-.accordion-content {
-  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+/* Card inner tab pill */
+.card-sub-tab {
+  transition: all 0.15s ease;
+}
+.card-sub-tab.active {
+  background-color: #1e293b;
+  color: #ffffff;
 }
 
-/* Pulse indicator */
-@keyframes softPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(1.05); }
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.pulse-badge {
-  animation: softPulse 2.5s infinite ease-in-out;
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
 }
 
-/* Print styling for study reports */
-@media print {
-  header, nav, #toast-container, button.no-print {
-    display: none !important;
-  }
-  body {
-    background: #fff;
-    color: #000;
-  }
+/* Badge Pulse */
+@keyframes softGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+.pulse-glow {
+  animation: softGlow 2s infinite;
 }

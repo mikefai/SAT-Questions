@@ -1,27 +1,25 @@
-// SAT 2026 Master Webpage Application Logic
+// SAT 2026 Master Webpage Application Controller
+// Ergonomic 2-Column UI with Hard-Tier Question Bank & Real-time Diagnostic Hub
 
-// Application State
 let appState = {
   activePage: 'blueprint',
   blueprintChartView: 'domain', // 'domain' or 'section'
-  mistakes: [],
-  selectedDomainFilter: 'all',
-  selectedSectionFilter: 'all',
-  searchQuery: ''
+  selectedSubject: 'all',       // 'all', 'Reading and Writing', 'Math'
+  selectedDomain: 'all',
+  searchQuery: '',
+  mistakes: []
 };
 
-// Global Chart references
 let blueprintChartInstance = null;
 let domainChartInstance = null;
 let rootCausesChartInstance = null;
 
-// Initialize Application on DOMContentLoaded
+// Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initStorage();
-  initNavigation();
   initDomainFilters();
   renderBlueprintChart();
-  renderQuestionCards();
+  renderQuestionsView();
   updateDiagnosticDashboard();
   lucide.createIcons();
 });
@@ -39,7 +37,6 @@ function initStorage() {
       appState.mistakes = [...SAT_2026_DATA.sampleLearnerMistakes];
     }
   } else {
-    // Default to sample data so user immediately sees rich analytics
     appState.mistakes = [...SAT_2026_DATA.sampleLearnerMistakes];
     saveMistakesToStorage();
   }
@@ -63,15 +60,15 @@ function updateMistakeCountBadge() {
 function switchPage(pageId) {
   appState.activePage = pageId;
 
-  // Hide all sections
+  // Hide all main pages
   document.getElementById('page-blueprint').classList.add('hidden');
   document.getElementById('page-questions').classList.add('hidden');
   document.getElementById('page-tracker').classList.add('hidden');
 
-  // Deactivate all nav buttons
-  document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+  // Deactivate all nav tabs
+  document.querySelectorAll('.main-nav-tab').forEach(btn => btn.classList.remove('active'));
 
-  // Show active section and activate button
+  // Activate target page
   if (pageId === 'blueprint') {
     document.getElementById('page-blueprint').classList.remove('hidden');
     document.getElementById('tab-btn-blueprint').classList.add('active');
@@ -79,7 +76,7 @@ function switchPage(pageId) {
   } else if (pageId === 'questions') {
     document.getElementById('page-questions').classList.remove('hidden');
     document.getElementById('tab-btn-questions').classList.add('active');
-    renderQuestionCards();
+    renderQuestionsView();
   } else if (pageId === 'tracker') {
     document.getElementById('page-tracker').classList.remove('hidden');
     document.getElementById('tab-btn-tracker').classList.add('active');
@@ -88,10 +85,6 @@ function switchPage(pageId) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
   lucide.createIcons();
-}
-
-function initNavigation() {
-  updateMistakeCountBadge();
 }
 
 // ==========================================
@@ -103,11 +96,11 @@ function updateBlueprintChartView(viewType) {
   const btnSection = document.getElementById('btn-chart-section');
 
   if (viewType === 'domain') {
-    btnDomain.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-100 text-blue-800';
-    btnSection.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200';
+    btnDomain.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-100 text-blue-800';
+    btnSection.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200';
   } else {
-    btnSection.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-100 text-blue-800';
-    btnDomain.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200';
+    btnSection.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-100 text-blue-800';
+    btnDomain.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200';
   }
 
   renderBlueprintChart();
@@ -144,7 +137,7 @@ function renderBlueprintChart() {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Estimated Average Question Count',
+          label: 'Estimated Average Questions',
           data: data,
           backgroundColor: colors,
           borderRadius: 8,
@@ -161,7 +154,7 @@ function renderBlueprintChart() {
               afterLabel: function(context) {
                 const total = 98;
                 const pct = ((context.raw / total) * 100).toFixed(1);
-                return `~${pct}% of entire SAT`;
+                return `~${pct}% of entire Digital SAT`;
               }
             }
           }
@@ -170,7 +163,7 @@ function renderBlueprintChart() {
           y: {
             beginAtZero: true,
             max: 18,
-            title: { display: true, text: 'Number of Questions', font: { size: 12, weight: 'bold' } },
+            title: { display: true, text: 'Number of Questions', font: { size: 11, weight: 'bold' } },
             grid: { color: '#f1f5f9' }
           },
           x: {
@@ -186,7 +179,6 @@ function renderBlueprintChart() {
       }
     });
   } else {
-    // By Section comparison
     blueprintChartInstance = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -209,7 +201,7 @@ function renderBlueprintChart() {
 }
 
 // ==========================================
-// 4. QUESTION TYPE DIRECTORY ("WHAT THEY'RE ASKING")
+// 4. QUESTION ENCYCLOPEDIA & QUICK-JUMP RAIL
 // ==========================================
 function initDomainFilters() {
   const select = document.getElementById('domainFilterSelect');
@@ -218,106 +210,200 @@ function initDomainFilters() {
   const domains = new Set();
   SAT_2026_DATA.questionTypes.forEach(q => domains.add(q.domain));
 
-  select.innerHTML = '<option value="all">All Domains</option>';
+  select.innerHTML = '<option value="all">All Domains (8)</option>';
   domains.forEach(d => {
     select.innerHTML += `<option value="${d}">${d}</option>`;
   });
 }
 
-function setSectionQuickFilter(section) {
-  const select = document.getElementById('sectionFilterSelect');
-  if (select) {
-    select.value = section;
+function setSubjectFilter(subject) {
+  appState.selectedSubject = subject;
+  
+  // Update segmented control buttons
+  const btnAll = document.getElementById('btn-sub-all');
+  const btnRW = document.getElementById('btn-sub-rw');
+  const btnMath = document.getElementById('btn-sub-math');
+
+  if (btnAll) btnAll.className = `filter-chip ${subject === 'all' ? 'active' : ''} px-3 py-1.5 rounded-lg text-slate-700`;
+  if (btnRW) btnRW.className = `filter-chip ${subject === 'Reading and Writing' ? 'active' : ''} px-3 py-1.5 rounded-lg text-slate-700`;
+  if (btnMath) btnMath.className = `filter-chip ${subject === 'Math' ? 'active' : ''} px-3 py-1.5 rounded-lg text-slate-700`;
+
+  renderQuestionsView();
+}
+
+function filterQuestions() {
+  const input = document.getElementById('questionSearchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  appState.searchQuery = input ? input.value.toLowerCase().trim() : '';
+  appState.selectedDomain = document.getElementById('domainFilterSelect').value;
+
+  if (clearBtn) {
+    if (appState.searchQuery) {
+      clearBtn.classList.remove('hidden');
+    } else {
+      clearBtn.classList.add('hidden');
+    }
+  }
+
+  renderQuestionsView();
+}
+
+function clearSearch() {
+  const input = document.getElementById('questionSearchInput');
+  if (input) input.value = '';
+  const mobileInput = document.getElementById('mobileSearchInput');
+  if (mobileInput) mobileInput.value = '';
+  filterQuestions();
+}
+
+function syncMobileSearch(val) {
+  const input = document.getElementById('questionSearchInput');
+  if (input) {
+    input.value = val;
     filterQuestions();
   }
 }
 
-function filterQuestions() {
-  appState.searchQuery = document.getElementById('questionSearchInput').value.toLowerCase().trim();
-  appState.selectedSectionFilter = document.getElementById('sectionFilterSelect').value;
-  appState.selectedDomainFilter = document.getElementById('domainFilterSelect').value;
-  renderQuestionCards();
-}
-
-function renderQuestionCards() {
-  const container = document.getElementById('questionsContainer');
-  if (!container) return;
-
-  const filtered = SAT_2026_DATA.questionTypes.filter(q => {
-    const matchesSection = appState.selectedSectionFilter === 'all' || q.section === appState.selectedSectionFilter;
-    const matchesDomain = appState.selectedDomainFilter === 'all' || q.domain === appState.selectedDomainFilter;
+function getFilteredQuestions() {
+  return SAT_2026_DATA.questionTypes.filter(q => {
+    const matchesSubject = appState.selectedSubject === 'all' || q.section === appState.selectedSubject;
+    const matchesDomain = appState.selectedDomain === 'all' || q.domain === appState.selectedDomain;
     const matchesSearch = !appState.searchQuery || 
                           q.title.toLowerCase().includes(appState.searchQuery) ||
                           q.whatItsAsking.toLowerCase().includes(appState.searchQuery) ||
                           q.domain.toLowerCase().includes(appState.searchQuery) ||
                           q.coreSkills.some(s => s.toLowerCase().includes(appState.searchQuery));
-    return matchesSection && matchesDomain && matchesSearch;
+    return matchesSubject && matchesDomain && matchesSearch;
   });
+}
 
-  if (filtered.length === 0) {
-    container.innerHTML = `
-      <div class="bg-white rounded-2xl p-12 text-center border border-slate-200">
-        <i data-lucide="search-x" class="w-12 h-12 text-slate-400 mx-auto mb-3"></i>
-        <h4 class="text-lg font-bold text-slate-800">No question types match your filter</h4>
-        <p class="text-xs text-slate-500 mt-1">Try clearing your search query or selecting 'All Domains'.</p>
-        <button onclick="resetQuestionFilters()" class="mt-4 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100">
-          Reset Filters
-        </button>
-      </div>
-    `;
-    lucide.createIcons();
-    return;
-  }
-
-  container.innerHTML = filtered.map(q => createQuestionCardHTML(q)).join('');
+function renderQuestionsView() {
+  const filtered = getFilteredQuestions();
+  renderQuickJumpNav(filtered);
+  renderQuestionCards(filtered);
   lucide.createIcons();
 }
 
-function resetQuestionFilters() {
-  document.getElementById('questionSearchInput').value = '';
-  document.getElementById('sectionFilterSelect').value = 'all';
-  document.getElementById('domainFilterSelect').value = 'all';
-  filterQuestions();
+function renderQuickJumpNav(filteredQuestions) {
+  const list = document.getElementById('quickJumpNavList');
+  const countBadge = document.getElementById('quickIndexCount');
+  if (!list) return;
+
+  if (countBadge) {
+    countBadge.textContent = `${filteredQuestions.length} Types`;
+  }
+
+  if (filteredQuestions.length === 0) {
+    list.innerHTML = `<div class="text-xs text-slate-400 py-2">No matching questions</div>`;
+    return;
+  }
+
+  list.innerHTML = filteredQuestions.map(q => {
+    const isRW = q.section === 'Reading and Writing';
+    const tagColor = isRW ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200';
+    
+    return `
+      <a href="#card-${q.id}" onclick="jumpToCard('${q.id}')" 
+         class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-100 transition text-xs group">
+        <div class="flex items-center gap-2 truncate">
+          <span class="w-1.5 h-1.5 rounded-full ${isRW ? 'bg-blue-600' : 'bg-purple-600'} shrink-0"></span>
+          <span class="font-medium text-slate-700 group-hover:text-blue-700 truncate">${q.title}</span>
+        </div>
+        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded border ${tagColor} shrink-0 ml-1">
+          ${isRW ? 'RW' : 'Math'}
+        </span>
+      </a>
+    `;
+  }).join('');
+}
+
+function jumpToCard(cardId) {
+  const card = document.getElementById(`card-${cardId}`);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const body = document.getElementById(`body-${cardId}`);
+    const icon = document.getElementById(`icon-${cardId}`);
+    if (body && body.classList.contains('hidden')) {
+      body.classList.remove('hidden');
+      if (icon) icon.style.transform = 'rotate(180deg)';
+    }
+  }
+}
+
+function renderQuestionCards(filteredQuestions) {
+  const container = document.getElementById('questionsContainer');
+  if (!container) return;
+
+  if (filteredQuestions.length === 0) {
+    container.innerHTML = `
+      <div class="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-sm">
+        <i data-lucide="search-x" class="w-12 h-12 text-slate-400 mx-auto mb-3"></i>
+        <h4 class="text-lg font-bold text-slate-800">No question types match your current filter</h4>
+        <p class="text-xs text-slate-500 mt-1">Try clearing your search query or switching to 'All' subjects.</p>
+        <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100 transition">
+          Reset All Filters
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filteredQuestions.map(q => createQuestionCardHTML(q)).join('');
+}
+
+function resetFilters() {
+  appState.selectedSubject = 'all';
+  appState.selectedDomain = 'all';
+  appState.searchQuery = '';
+  
+  const searchInput = document.getElementById('questionSearchInput');
+  if (searchInput) searchInput.value = '';
+  const domainSelect = document.getElementById('domainFilterSelect');
+  if (domainSelect) domainSelect.value = 'all';
+
+  setSubjectFilter('all');
 }
 
 function createQuestionCardHTML(q) {
   const isRW = q.section === 'Reading and Writing';
-  const badgeColor = isRW ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-purple-100 text-purple-800 border-purple-200';
-  const headerColor = isRW ? 'border-l-4 border-l-blue-600' : 'border-l-4 border-l-purple-600';
+  const badgeColor = isRW ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200';
+  const borderHighlight = isRW ? 'border-l-4 border-l-blue-600' : 'border-l-4 border-l-purple-600';
 
   return `
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden ${headerColor} hover-card transition-all" id="card-${q.id}">
+    <div class="q-card bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden ${borderHighlight} transition-all" id="card-${q.id}">
       
       <!-- Card Header -->
-      <div class="p-6 cursor-pointer" onclick="toggleQuestionCard('${q.id}')">
+      <div class="p-5 sm:p-6 cursor-pointer select-none" onclick="toggleQuestionCard('${q.id}')">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeColor}">
+          
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+              <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${badgeColor}">
                 ${q.section}
               </span>
-              <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                 ${q.domain}
               </span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded ${q.difficulty.includes('Hard') ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'}">
-                Difficulty: ${q.difficulty}
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                <i data-lucide="flame" class="w-3 h-3 text-rose-500"></i> ${q.difficulty}
               </span>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">${q.title}</h3>
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">${q.title}</h3>
           </div>
 
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/80">
+          <div class="flex items-center gap-3 self-end sm:self-center">
+            <span class="text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
               Freq: ${q.frequency}
             </span>
             <button class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 transition" id="toggle-btn-${q.id}">
-              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" id="icon-${q.id}"></i>
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="icon-${q.id}"></i>
             </button>
           </div>
+
         </div>
 
         <!-- Highlight Summary: What It's Asking -->
-        <div class="mt-4 p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <div class="mt-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs sm:text-sm text-slate-700 leading-relaxed">
           <div class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
             <i data-lucide="help-circle" class="w-4 h-4 text-blue-600"></i>
             What is this question type asking?
@@ -327,30 +413,31 @@ function createQuestionCardHTML(q) {
       </div>
 
       <!-- Expandable Deep-Dive Body -->
-      <div id="body-${q.id}" class="hidden border-t border-slate-100 bg-slate-50/40 p-6 space-y-6">
+      <div id="body-${q.id}" class="border-t border-slate-100 bg-slate-50/40 p-5 sm:p-6 space-y-6">
         
         <!-- Common Stems & Prompt Phrasing -->
         <div>
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
             <i data-lucide="quote" class="w-4 h-4 text-indigo-600"></i> Common Question Prompt Stems
           </h4>
-          <ul class="mt-2 space-y-1.5">
+          <div class="space-y-1.5">
             ${q.commonStems.map(stem => `
-              <li class="text-xs sm:text-sm text-slate-800 bg-white p-2.5 rounded-lg border border-slate-200 font-medium">
-                • "${stem}"
-              </li>
+              <div class="text-xs sm:text-sm text-slate-800 bg-white p-2.5 rounded-xl border border-slate-200 font-medium flex items-start gap-2">
+                <span class="text-blue-600 font-bold">•</span>
+                <span>"${stem}"</span>
+              </div>
             `).join('')}
-          </ul>
+          </div>
         </div>
 
-        <!-- Core Skills & Tested Mechanisms -->
+        <!-- Core Skills -->
         <div>
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <i data-lucide="check-square" class="w-4 h-4 text-emerald-600"></i> Core Tested Skills
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
+            <i data-lucide="check-square" class="w-4 h-4 text-emerald-600"></i> Core Tested Skills & Mechanisms
           </h4>
-          <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             ${q.coreSkills.map(skill => `
-              <div class="text-xs text-slate-700 bg-emerald-50/60 border border-emerald-200/70 p-2.5 rounded-lg flex items-start gap-2">
+              <div class="text-xs text-slate-700 bg-emerald-50/70 border border-emerald-200/80 p-2.5 rounded-xl flex items-start gap-2">
                 <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0"></i>
                 <span>${skill}</span>
               </div>
@@ -358,9 +445,9 @@ function createQuestionCardHTML(q) {
           </div>
         </div>
 
-        <!-- Traps & Distractors + Master Strategy (2 Columns) -->
+        <!-- Traps & Distractors + Master Strategy -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-rose-50/70 border border-rose-200">
+          <div class="p-4 rounded-xl bg-rose-50/80 border border-rose-200">
             <h5 class="text-xs font-bold text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
               <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i> Trap Distractor Warning
             </h5>
@@ -369,7 +456,7 @@ function createQuestionCardHTML(q) {
             </p>
           </div>
 
-          <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200">
+          <div class="p-4 rounded-xl bg-blue-50/80 border border-blue-200">
             <h5 class="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
               <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i> Master Solving Strategy
             </h5>
@@ -379,44 +466,51 @@ function createQuestionCardHTML(q) {
           </div>
         </div>
 
-        <!-- Interactive Realistic 2026 Sample Question -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-              <i data-lucide="play-circle" class="w-4 h-4 text-purple-600"></i> Interactive 2026 Sample Question
-            </span>
-            <button onclick="logThisQuestionType('${q.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
-              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Log as a Mistake
+        <!-- HARD-TIER PRACTICE CHALLENGE (INTERACTIVE QUIZ) -->
+        <div class="bg-white rounded-2xl border-2 border-slate-200 p-5 sm:p-6 shadow-xs relative">
+          
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500 text-white flex items-center gap-1">
+                <i data-lucide="flame" class="w-3 h-3"></i> Hard-Tier Challenge
+              </span>
+              <span class="text-xs text-slate-500 font-medium">Module 2 750+ Benchmark</span>
+            </div>
+            
+            <button onclick="logThisQuestionType('${q.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1 hover:underline">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Log as Practice Error
             </button>
           </div>
 
-          <div class="space-y-3 text-xs sm:text-sm">
-            <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200/80 font-serif text-slate-900 whitespace-pre-line leading-relaxed">
+          <div class="space-y-4">
+            <!-- Passage / Math Problem text -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 font-serif text-slate-900 text-xs sm:text-sm whitespace-pre-line leading-relaxed">
               ${q.sampleQuestion.passage}
             </div>
 
-            <p class="font-bold text-slate-900">${q.sampleQuestion.stem}</p>
+            <p class="font-bold text-slate-900 text-xs sm:text-sm">${q.sampleQuestion.stem}</p>
 
             <!-- Choices -->
-            <div class="space-y-2 mt-2" id="choices-container-${q.id}">
-              ${q.sampleQuestion.choices.map((choice, idx) => `
+            <div class="space-y-2" id="choices-container-${q.id}">
+              ${q.sampleQuestion.choices.map(choice => `
                 <button onclick="checkSampleAnswer('${q.id}', '${choice.replace(/'/g, "\\'")}')" 
-                        class="w-full text-left p-3 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-xs sm:text-sm font-medium transition text-slate-800 choice-btn-${q.id}">
+                        class="choice-btn w-full text-left p-3 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-medium text-slate-800 choice-btn-${q.id}">
                   ${choice}
                 </button>
               `).join('')}
             </div>
 
-            <!-- Instant Solution & Explanation Dropdown -->
+            <!-- Instant Solution & Detailed Explanation -->
             <div id="explanation-${q.id}" class="hidden mt-4 p-4 rounded-xl bg-slate-900 text-white space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                   <i data-lucide="check-circle-2" class="w-4 h-4"></i> Correct Answer: ${q.sampleQuestion.correctAnswer}
                 </span>
               </div>
               <p class="text-xs text-slate-300 leading-relaxed">${q.sampleQuestion.explanation}</p>
             </div>
           </div>
+
         </div>
 
       </div>
@@ -427,14 +521,14 @@ function createQuestionCardHTML(q) {
 function toggleQuestionCard(cardId) {
   const body = document.getElementById(`body-${cardId}`);
   const icon = document.getElementById(`icon-${cardId}`);
-  if (!body || !icon) return;
+  if (!body) return;
 
   if (body.classList.contains('hidden')) {
     body.classList.remove('hidden');
-    icon.style.transform = 'rotate(180deg)';
+    if (icon) icon.style.transform = 'rotate(180deg)';
   } else {
     body.classList.add('hidden');
-    icon.style.transform = 'rotate(0deg)';
+    if (icon) icon.style.transform = 'rotate(0deg)';
   }
 }
 
@@ -442,13 +536,13 @@ function expandAllQuestionCards(expand) {
   SAT_2026_DATA.questionTypes.forEach(q => {
     const body = document.getElementById(`body-${q.id}`);
     const icon = document.getElementById(`icon-${q.id}`);
-    if (body && icon) {
+    if (body) {
       if (expand) {
         body.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
+        if (icon) icon.style.transform = 'rotate(180deg)';
       } else {
         body.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
+        if (icon) icon.style.transform = 'rotate(0deg)';
       }
     }
   });
@@ -467,11 +561,11 @@ function checkSampleAnswer(questionId, selectedChoice) {
   buttons.forEach(btn => {
     const text = btn.textContent.trim();
     if (text === q.sampleQuestion.correctAnswer) {
-      btn.className = "w-full text-left p-3 rounded-lg border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm";
+      btn.className = "choice-btn w-full text-left p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm";
     } else if (text === selectedChoice) {
-      btn.className = "w-full text-left p-3 rounded-lg border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium text-xs sm:text-sm";
+      btn.className = "choice-btn w-full text-left p-3 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium text-xs sm:text-sm";
     } else {
-      btn.className = "w-full text-left p-3 rounded-lg border border-slate-200 text-slate-400 text-xs sm:text-sm opacity-60";
+      btn.className = "choice-btn w-full text-left p-3 rounded-xl border border-slate-200 text-slate-400 text-xs sm:text-sm opacity-50";
     }
   });
 
@@ -483,7 +577,7 @@ function logThisQuestionType(questionId) {
 }
 
 // ==========================================
-// 5. LEARNER MISTAKE TRACKER & WEAK SPOT HUB
+// 5. LEARNER MISTAKE TRACKER & DIAGNOSTIC HUB
 // ==========================================
 function updateDiagnosticDashboard() {
   updateMistakeCountBadge();
@@ -545,7 +639,7 @@ function renderTopWronglyAnsweredRanking() {
       <div class="text-center py-8 text-slate-400">
         <i data-lucide="clipboard-check" class="w-10 h-10 mx-auto text-slate-500 mb-2"></i>
         <p class="text-sm font-semibold">No practice mistakes logged yet!</p>
-        <p class="text-xs text-slate-500 mt-1">Click 'Load Realistic Demo Data' or 'Log New Error' to see your diagnostic profile.</p>
+        <p class="text-xs text-slate-500 mt-1">Click 'Load Realistic Demo Data' or 'Log New Practice Error' to see your diagnostic profile.</p>
       </div>
     `;
     lucide.createIcons();
@@ -558,7 +652,7 @@ function renderTopWronglyAnsweredRanking() {
     const rankColors = index === 0 ? 'bg-rose-500 text-white' : index === 1 ? 'bg-amber-500 text-white' : 'bg-slate-700 text-slate-200';
     
     return `
-      <div class="p-4 rounded-xl bg-slate-800/80 border ${isTop1 ? 'border-rose-500/50 shadow-md shadow-rose-900/20' : 'border-slate-700'} flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="p-4 rounded-xl bg-slate-800/90 border ${isTop1 ? 'border-rose-500/50 shadow-md shadow-rose-900/20' : 'border-slate-700'} flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         
         <div class="flex items-center gap-3.5">
           <div class="w-8 h-8 rounded-lg ${rankColors} flex items-center justify-center font-bold text-sm shrink-0">
@@ -579,14 +673,14 @@ function renderTopWronglyAnsweredRanking() {
           <div class="flex-1 sm:w-36">
             <div class="flex justify-between text-xs text-slate-400 mb-1">
               <span>${item.count} errors</span>
-              <span class="font-bold ${isTop1 ? 'text-rose-400' : 'text-slate-300'}">${percentage}% of all errors</span>
+              <span class="font-bold ${isTop1 ? 'text-rose-400' : 'text-slate-300'}">${percentage}% of errors</span>
             </div>
             <div class="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
               <div class="${isTop1 ? 'bg-rose-500' : 'bg-indigo-500'} h-2 rounded-full" style="width: ${percentage}%"></div>
             </div>
           </div>
 
-          <button onclick="jumpToQuestionType('${item.id}')" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs text-white font-semibold flex items-center gap-1 transition shrink-0">
+          <button onclick="jumpToQuestionTypeFromTracker('${item.id}')" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs text-white font-bold flex items-center gap-1 transition shrink-0">
             <span>Study Guide</span>
             <i data-lucide="external-link" class="w-3 h-3"></i>
           </button>
@@ -599,17 +693,10 @@ function renderTopWronglyAnsweredRanking() {
   lucide.createIcons();
 }
 
-function jumpToQuestionType(typeId) {
+function jumpToQuestionTypeFromTracker(typeId) {
   switchPage('questions');
   setTimeout(() => {
-    const card = document.getElementById(`card-${typeId}`);
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const body = document.getElementById(`body-${typeId}`);
-      if (body && body.classList.contains('hidden')) {
-        toggleQuestionCard(typeId);
-      }
-    }
+    jumpToCard(typeId);
   }, 100);
 }
 
@@ -710,7 +797,7 @@ function renderPersonalizedPrescription() {
       <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i>
       Targeted AI Diagnostic Prescription
     </div>
-    <h3 class="text-lg font-bold text-slate-900">Your Recommended Action Plan</h3>
+    <h3 class="text-lg font-bold text-slate-900">Your Recommended High-Yield Action Plan</h3>
     <p class="text-xs text-slate-600 mt-1">
       Based on your practice log, your primary point of score leakage is 
       <strong class="text-slate-900">${top1.title}</strong> (${top1.count} errors). Here is your high-yield drill plan:
@@ -722,7 +809,7 @@ function renderPersonalizedPrescription() {
           <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
           Priority #1: ${top1.title} (${top1.subject})
         </div>
-        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+        <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
           ${getRemediationTipForType(top1.id)}
         </p>
       </div>
@@ -733,7 +820,7 @@ function renderPersonalizedPrescription() {
             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
             Priority #2: ${top2.title} (${top2.subject})
           </div>
-          <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
             ${getRemediationTipForType(top2.id)}
           </p>
         </div>
@@ -745,14 +832,14 @@ function renderPersonalizedPrescription() {
 
 function getRemediationTipForType(typeId) {
   const tips = {
-    'rw-inferences': 'Focus on conservative logic. Do not make extrapolations. If a statement goes beyond the strict text premises (e.g. introduces new conditions), immediately discard it.',
-    'rw-words-in-context': 'Ignore secondary colloquial definitions. Predict your own simple word before reading the choices, and match tone and polarity.',
-    'rw-rhetorical-synthesis': 'Read the question stem goal first! Eliminate true facts from the bullets that do not specifically fulfill the required goal.',
-    'rw-standard-english-boundaries': 'Master the Semicolon and Colon rules: text before semicolon/colon must always be a complete independent clause.',
-    'math-circle-theorems-equations': 'Practice completing the square (add (b/2)^2 to both sides). Check Desmos graphs to visually confirm the radius and center coordinates.',
+    'rw-inferences': 'Focus on conservative logic. Never make extrapolations beyond stated premises. If an answer introduces new unstated constraints, immediately discard it.',
+    'rw-words-in-context': 'Ignore secondary colloquial definitions. Predict your own simple synonym based strictly on sentence contrast/support cues, then match tone and polarity.',
+    'rw-rhetorical-synthesis': 'Read the question prompt goal first! Cross out choices that are factually true according to the notes but fail to fulfill the specific goal verb.',
+    'rw-standard-english-boundaries': 'Master Semicolon and Colon rules: the clause before a semicolon or colon must ALWAYS be a complete independent clause (Subject + Verb).',
+    'math-circle-theorems-equations': 'Practice completing the square on 2x^2 + 2y^2 by dividing everything by 2 first. Check Desmos graphs to visually confirm radius and center.',
     'math-quadratic-equations-parabolas': 'Review the vertex formula x = -b/(2a) and standard vertex form y = a(x - h)^2 + k. Memorize discriminant conditions (b^2 - 4ac).',
-    'math-linear-functions-word-problems': 'Isolate rates (slope = per/each) from fixed baselines (y-intercept = initial/flat fee).',
-    'math-ratios-percentages-units': 'Use multiplier fractions for consecutive percentage shifts: (1 - d1) * (1 + p2). Never add percentages directly!'
+    'math-linear-functions-word-problems': 'Isolate rates (slope = per/each/every) from fixed starting values (y-intercept = initial baseline). Watch out for unit conversions!',
+    'math-ratios-percentages-units': 'Use multiplier decimals for consecutive percentage changes: (1 - d1) * (1 + p2). Never add percentages directly!'
   };
 
   return tips[typeId] || 'Review the master strategy in the Question Directory and complete 10 focused drills in Bluebook / Khan Academy.';
@@ -766,7 +853,7 @@ function renderMistakesTable() {
     tbody.innerHTML = `
       <tr>
         <td colspan="7" class="py-8 text-center text-slate-400">
-          No practice mistakes logged yet. Click 'Log New Error' or 'Load Demo Data' above.
+          No practice mistakes logged yet. Click 'Log New Practice Error' or 'Load Realistic Demo Data' above.
         </td>
       </tr>
     `;

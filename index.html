@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAT 2026 Master Hub — Blueprint, Question Types & Error Diagnostic Tracker</title>
+  <title>SAT 2026 Master Hub — Blueprint, Hard-Tier Question Bank & Error Diagnostic Tracker</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -36,356 +36,321 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 antialiased flex flex-col">
+<body class="min-h-screen bg-slate-50/70 text-slate-900 antialiased flex flex-col selection:bg-blue-500 selection:text-white">
 
-  <!-- TOP ANNOUNCEMENT BAR -->
-  <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-xs sm:text-sm py-2 px-4 border-b border-slate-800">
+  <!-- TOP STATUS BAR -->
+  <aside aria-label="Official test format details" class="bg-slate-950 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/30 text-indigo-300 border border-indigo-500/40">
-          2026 Official Format
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          Official 2026 Digital SAT Spec
         </span>
-        <span>Digital SAT Specification • Adaptive Module Engine • Full Built-in Desmos</span>
+        <span class="text-slate-400">Section-Adaptive Engine • Module 1 & 2 Hard Tier • Desmos Included</span>
       </div>
-      <div class="flex items-center gap-4 text-slate-300 text-xs">
+      <div class="flex items-center gap-4 text-[11px] text-slate-400">
         <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-blue-400"></i> 134 Total Minutes</span>
         <span class="flex items-center gap-1"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-emerald-400"></i> 98 Total Questions</span>
         <span class="flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> 400 - 1600 Score Scale</span>
       </div>
     </div>
-  </div>
+  </aside>
 
-  <!-- MAIN HEADER & NAVIGATION -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+  <!-- MAIN NAVIGATION HEADER -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
-        <!-- Logo / Title -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-blue-500/20">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchPage('blueprint')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-extrabold text-lg shadow-md shadow-blue-500/20">
             SAT
           </div>
           <div>
-            <h1 class="text-lg font-bold text-slate-900 leading-tight">SAT 2026 Prep Matrix</h1>
-            <p class="text-xs text-slate-500 font-medium">Digital Suite Blueprint & Diagnostic System</p>
+            <div class="flex items-center gap-2">
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">SAT 2026 Master Hub</h1>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">Hard-Tier Included</span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">Blueprint, Question Encyclopedia & Error Diagnostic Tracker</p>
           </div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <nav class="flex p-1 bg-slate-100 rounded-xl border border-slate-200/80 text-sm font-medium">
+        <!-- Center Main Tabs -->
+        <nav class="flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium">
           <button id="tab-btn-blueprint" onclick="switchPage('blueprint')" 
-                  class="nav-tab active flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700">
+                  class="main-nav-tab active flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700">
             <i data-lucide="layout-grid" class="w-4 h-4"></i>
             <span class="hidden sm:inline">1. Blueprint & Counts</span>
             <span class="sm:hidden">Blueprint</span>
           </button>
           
           <button id="tab-btn-questions" onclick="switchPage('questions')" 
-                  class="nav-tab flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700">
+                  class="main-nav-tab flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700">
             <i data-lucide="book-open" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">2. "What They're Asking"</span>
-            <span class="sm:hidden">Question Types</span>
+            <span class="hidden sm:inline">2. Question Types & Stems</span>
+            <span class="sm:hidden">Questions</span>
           </button>
 
           <button id="tab-btn-tracker" onclick="switchPage('tracker')" 
-                  class="nav-tab flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700 relative">
+                  class="main-nav-tab flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-slate-700 hover:text-blue-700 relative">
             <i data-lucide="target" class="w-4 h-4"></i>
             <span class="hidden sm:inline">3. Learner Weak Spot Tracker</span>
-            <span class="sm:hidden">Error Tracker</span>
+            <span class="sm:hidden">Tracker</span>
             <span id="nav-mistake-count" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
           </button>
         </nav>
 
-        <!-- Quick Actions -->
-        <div class="hidden md:flex items-center gap-2">
-          <button onclick="openQuickLogModal()" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition">
+        <!-- Quick Log Action -->
+        <div class="flex items-center gap-2">
+          <button onclick="openQuickLogModal()" class="flex items-center gap-1.5 text-xs font-bold px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            Log Practice Mistake
+            <span class="hidden md:inline">Log Practice Error</span>
+            <span class="md:hidden">Log</span>
           </button>
         </div>
+
       </div>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT CONTAINER -->
+  <!-- MAIN APPLICATION CONTAINER -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
     <!-- ========================================================================= -->
-    <!-- PAGE 1: SAT 2026 BLUEPRINT & QUESTION COUNTS -->
+    <!-- TAB 1: BLUEPRINT & QUESTION COUNTS -->
     <!-- ========================================================================= -->
-    <section id="page-blueprint" class="space-y-8 block">
+    <section id="page-blueprint" class="space-y-8 block animate-fade-in">
       
       <!-- Hero Banner -->
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white p-6 sm:p-8 shadow-xl">
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-slate-800">
         <div class="relative z-10 max-w-3xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-4">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Comprehensive 2026 Test Structure
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-3">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Comprehensive SAT 2026 Test Structure
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">SAT 2026 Question Types & Volume Blueprint</h2>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">SAT 2026 Question Types & Volume Breakdown</h2>
           <p class="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
-            The Digital SAT consists of <span class="text-white font-semibold">2 primary sections</span> divided into 
-            <span class="text-white font-semibold">4 timed modules</span> with 
-            <span class="text-white font-semibold">98 total questions</span>. Discover exact question frequencies, domain percentages, and time allocations.
+            The Digital SAT comprises <span class="text-white font-semibold">2 sections</span> across 
+            <span class="text-white font-semibold">4 adaptive timed modules</span> with 
+            <span class="text-white font-semibold">98 total questions</span>. Explore exact question frequencies, domain percentages, and pacing strategy.
           </p>
         </div>
-        <!-- Decorative subtle background circles -->
-        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Decorative glowing orb -->
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
       </div>
 
-      <!-- Quick Metrics Grid -->
+      <!-- Quick Metrics Ribbon -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover-card">
-          <div class="flex items-center justify-between text-slate-500 text-xs font-medium uppercase tracking-wider">
+        
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
             <span>Reading & Writing</span>
-            <i data-lucide="feather" class="w-4 h-4 text-blue-600"></i>
+            <span class="p-1.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="feather" class="w-4 h-4"></i></span>
           </div>
-          <div class="mt-2 text-2xl sm:text-3xl font-bold text-slate-900">54 Qs</div>
-          <p class="mt-1 text-xs text-slate-500">2 modules × 27 Qs • 64 mins (~71s/Q)</p>
+          <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">54 Qs</div>
+          <p class="mt-1 text-xs text-slate-500">2 modules × 27 Qs • 64 mins (~71.1s/Q)</p>
           <div class="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
             <div class="bg-blue-600 h-1.5 rounded-full" style="width: 55%"></div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover-card">
-          <div class="flex items-center justify-between text-slate-500 text-xs font-medium uppercase tracking-wider">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
             <span>Math (Full Desmos)</span>
-            <i data-lucide="calculator" class="w-4 h-4 text-purple-600"></i>
+            <span class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="calculator" class="w-4 h-4"></i></span>
           </div>
-          <div class="mt-2 text-2xl sm:text-3xl font-bold text-slate-900">44 Qs</div>
-          <p class="mt-1 text-xs text-slate-500">2 modules × 22 Qs • 70 mins (~95s/Q)</p>
+          <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">44 Qs</div>
+          <p class="mt-1 text-xs text-slate-500">2 modules × 22 Qs • 70 mins (~95.5s/Q)</p>
           <div class="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
             <div class="bg-purple-600 h-1.5 rounded-full" style="width: 45%"></div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover-card">
-          <div class="flex items-center justify-between text-slate-500 text-xs font-medium uppercase tracking-wider">
-            <span>Scored vs Pretest</span>
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+            <span>Operational vs Pretest</span>
+            <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
           </div>
-          <div class="mt-2 text-2xl sm:text-3xl font-bold text-slate-900">84 / 14</div>
-          <p class="mt-1 text-xs text-slate-500">84 Operational questions + 14 Unscored</p>
+          <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">84 / 14</div>
+          <p class="mt-1 text-xs text-slate-500">84 Scored questions + 14 Unscored field tests</p>
           <div class="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
             <div class="bg-emerald-600 h-1.5 rounded-full" style="width: 86%"></div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover-card">
-          <div class="flex items-center justify-between text-slate-500 text-xs font-medium uppercase tracking-wider">
-            <span>Adaptive Engine</span>
-            <i data-lucide="git-branch" class="w-4 h-4 text-amber-600"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+            <span>Adaptive Architecture</span>
+            <span class="p-1.5 rounded-lg bg-amber-50 text-amber-600"><i data-lucide="git-branch" class="w-4 h-4"></i></span>
           </div>
-          <div class="mt-2 text-2xl sm:text-3xl font-bold text-slate-900">2-Stage</div>
-          <p class="mt-1 text-xs text-slate-500">Module 1 baseline → Mod 2 Easy or Hard</p>
-          <div class="mt-3 flex items-center gap-1 text-[11px] font-medium text-amber-600">
-            <i data-lucide="alert-circle" class="w-3 h-3"></i> Crucial to ace Module 1
+          <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">2-Stage Engine</div>
+          <p class="mt-1 text-xs text-slate-500">Module 1 performance routes to Easy or Hard Mod 2</p>
+          <div class="mt-3 flex items-center gap-1 text-[11px] font-bold text-amber-600">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> High score requires Hard Mod 2
           </div>
         </div>
+
       </div>
 
-      <!-- Section Detailed Comparison (2 Columns) -->
+      <!-- Side-by-Side Domain Cards (RW and Math) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         <!-- READING & WRITING SECTION BREAKDOWN -->
-        <div class="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
-          <div class="p-6 bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex justify-between items-start">
+        <div class="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden flex flex-col">
+          <div class="p-6 bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white flex justify-between items-start">
             <div>
               <span class="inline-block text-xs font-bold uppercase tracking-wider text-blue-300">Section 1</span>
               <h3 class="text-xl font-bold mt-1">Reading and Writing (RW)</h3>
-              <p class="text-xs text-blue-200 mt-1">54 Total Questions • 64 Minutes • Passages 25-150 Words</p>
+              <p class="text-xs text-blue-200 mt-1">54 Questions • 64 Minutes • Passages 25–150 Words</p>
             </div>
-            <div class="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg text-right">
-              <span class="block text-lg font-bold text-white">4 Domains</span>
-              <span class="text-[11px] text-blue-200">11 Question Sub-types</span>
+            <div class="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl text-right border border-white/10">
+              <span class="block text-base font-extrabold text-white">4 Domains</span>
+              <span class="text-[11px] text-blue-200">11 Question Types</span>
             </div>
           </div>
 
-          <div class="p-6 space-y-4">
-            <!-- Domain 1 -->
+          <div class="p-6 space-y-4 flex-1">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-blue-600"></span> Craft and Structure
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Craft and Structure
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
-                  28% (~13-15 Questions)
+                  28% (~13–15 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Vocabulary in context, analyzing rhetorical structure & purpose, connecting paired texts.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Words in Context, analyzing Text Structure and Purpose, connecting Paired Passages.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Words in Context (~5-7 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Text Structure & Purpose (~4-6 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Cross-Text Connections (~1-2 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 2 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-indigo-600"></span> Information and Ideas
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> Information and Ideas
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                  26% (~12-14 Questions)
+                  26% (~12–14 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Central ideas, locating explicit details, textual & quantitative evidence analysis, and drawing logical inferences.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Central Ideas and Details, Textual & Quantitative Evidence, Drawing Logical Inferences.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Central Ideas & Details (~4-6 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Command of Evidence (~6-8 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Inferences (~4-6 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 3 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-cyan-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-cyan-600"></span> Standard English Conventions
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Standard English Conventions
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-100 text-cyan-800">
-                  26% (~11-15 Questions)
+                  26% (~11–15 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Sentence boundaries, comma splices, colons, semicolons, subject-verb agreement, verb tense, and modifier placement.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Sentence Boundaries (comma splices, colons, semicolons), Subject-Verb, Verb Tense, Modifiers.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Boundaries / Punctuation (~7-9 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Form, Structure & Sense (~5-6 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 4 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-teal-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-teal-600"></span> Expression of Ideas
+                  <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span> Expression of Ideas
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800">
-                  20% (~8-12 Questions)
+                  20% (~8–12 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Rhetorical synthesis of student research notes and selecting optimal transitional words/phrases.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Rhetorical Synthesis of student bullet research notes and selecting optimal Transitional Connectives.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Rhetorical Synthesis (~5-6 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Transitions (~4-5 Qs)</span>
-              </div>
             </div>
           </div>
         </div>
 
         <!-- MATH SECTION BREAKDOWN -->
-        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
-          <div class="p-6 bg-gradient-to-r from-purple-900 to-slate-900 text-white flex justify-between items-start">
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col">
+          <div class="p-6 bg-gradient-to-r from-purple-900 via-fuchsia-950 to-slate-900 text-white flex justify-between items-start">
             <div>
               <span class="inline-block text-xs font-bold uppercase tracking-wider text-purple-300">Section 2</span>
-              <h3 class="text-xl font-bold mt-1">Math (Calculators Allowed Throughout)</h3>
-              <p class="text-xs text-purple-200 mt-1">44 Total Questions • 70 Minutes • Multiple Choice & SPR Grid-ins</p>
+              <h3 class="text-xl font-bold mt-1">Math (Calculator throughout)</h3>
+              <p class="text-xs text-purple-200 mt-1">44 Questions • 70 Minutes • Multiple Choice & SPR Grid-ins</p>
             </div>
-            <div class="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg text-right">
-              <span class="block text-lg font-bold text-white">4 Domains</span>
-              <span class="text-[11px] text-purple-200">10 Question Sub-types</span>
+            <div class="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl text-right border border-white/10">
+              <span class="block text-base font-extrabold text-white">4 Domains</span>
+              <span class="text-[11px] text-purple-200">10 Question Types</span>
             </div>
           </div>
 
-          <div class="p-6 space-y-4">
-            <!-- Domain 1 -->
+          <div class="p-6 space-y-4 flex-1">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-purple-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-purple-600"></span> Algebra
+                  <span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span> Algebra
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800">
-                  35% (~13-15 Questions)
+                  35% (~13–15 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Linear equations in 1 and 2 variables, linear functions, word problems, rates of change, and systems of linear equations.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Linear equations in 1 & 2 variables, linear functions, real-world rates, systems of linear equations.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Linear Eq. 1 Var (~3-4 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Linear Word Problems (~4-6 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Systems & Inequalities (~3-5 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 2 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-purple-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-fuchsia-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-fuchsia-600"></span> Advanced Math
+                  <span class="w-2.5 h-2.5 rounded-full bg-fuchsia-600"></span> Advanced Math
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-fuchsia-100 text-fuchsia-800">
-                  35% (~13-15 Questions)
+                  35% (~13–15 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Quadratics (vertex/discriminant), parabolas, exponential growth/decay, polynomials, radicals, and rational equations.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Quadratics (vertex/discriminant), exponential growth/decay, polynomials, radicals, and rational equations.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Quadratics & Parabolas (~5-7 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Exponential Functions (~3-4 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Polynomials & Radicals (~3-5 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 3 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-purple-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-pink-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-pink-600"></span> Problem-Solving & Data Analysis
+                  <span class="w-2.5 h-2.5 rounded-full bg-pink-600"></span> Problem-Solving & Data Analysis
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-100 text-pink-800">
-                  15% (~5-7 Questions)
+                  15% (~5–7 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Ratios, rates, percentages, unit analysis, one-variable statistics (mean, median, SD), two-way tables, and probability.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Ratios, rates, percentages, unit conversions, one-variable statistics (mean, median, SD), probability.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Ratios & Percentages (~3-4 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Statistics & Probability (~3-4 Qs)</span>
-              </div>
             </div>
 
-            <!-- Domain 4 -->
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-purple-300 transition">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-rose-300 transition">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-rose-600"></span> Geometry & Trigonometry
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> Geometry & Trigonometry
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
-                  15% (~5-7 Questions)
+                  15% (~5–7 Qs)
                 </span>
               </div>
-              <p class="text-xs text-slate-600 mt-2">
-                Area/volume formulas, lines & angles, right-triangle trig (SOH CAH TOA, complementary identity), and circle equations.
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Area & volume, triangle similarity & congruence, right-triangle trigonometry (SOH CAH TOA), circle equations.
               </p>
-              <div class="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Triangles & Trigonometry (~4-6 Qs)</span>
-                <span class="bg-white px-2 py-0.5 rounded border text-slate-700">Circle Theorems & Equations (~2-3 Qs)</span>
-              </div>
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- Interactive Question Distribution Visual Chart -->
+      <!-- Chart Comparison -->
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <h3 class="text-lg font-bold text-slate-900">2026 Question Distribution Comparison</h3>
+            <h3 class="text-lg font-bold text-slate-900">Question Distribution Comparison</h3>
             <p class="text-xs text-slate-500">Visual comparison of question volume by domain across both sections</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="updateBlueprintChartView('domain')" id="btn-chart-domain" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-100 text-blue-800">By Domain</button>
-            <button onclick="updateBlueprintChartView('section')" id="btn-chart-section" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">By Section</button>
+            <button onclick="updateBlueprintChartView('domain')" id="btn-chart-domain" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-100 text-blue-800">By Domain</button>
+            <button onclick="updateBlueprintChartView('section')" id="btn-chart-section" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">By Section</button>
           </div>
         </div>
         <div class="mt-6 h-72 sm:h-80 relative">
@@ -393,92 +358,129 @@
         </div>
       </div>
 
-      <!-- Action callout to jump to question directory -->
-      <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
-          <h4 class="text-xl font-bold">Ready to see what each question type is asking?</h4>
-          <p class="text-slate-300 text-sm mt-1">Explore our standalone Question Directory with complete stems, trap alerts, and interactive sample questions.</p>
-        </div>
-        <button onclick="switchPage('questions')" class="whitespace-nowrap px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-lg transition flex items-center gap-2">
-          <span>Explore All Question Types</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
-      </div>
-
     </section>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 2: STANDALONE QUESTION TYPE DIRECTORY ("WHAT THEY'RE ASKING") -->
+    <!-- TAB 2: STANDALONE QUESTION ENCYCLOPEDIA (ERGONOMIC 2-COLUMN LAYOUT) -->
     <!-- ========================================================================= -->
-    <section id="page-questions" class="space-y-6 hidden">
+    <section id="page-questions" class="hidden animate-fade-in">
       
-      <!-- Directory Top Bar -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Top Control Header -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 uppercase tracking-wider">
-              <i data-lucide="compass" class="w-4 h-4"></i> Master Question Encyclopedia
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                21 Question Types Catalog
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                <i data-lucide="flame" class="w-3 h-3 text-rose-500"></i> Hard-Tier Challenges Built-in
+              </span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900 mt-1">All SAT 2026 Question Types & What They're Asking</h2>
-            <p class="text-xs text-slate-500 mt-1">Deep-dive into every question format, exact stem patterns, core skills, trap distractor analysis, and live interactive examples.</p>
+            <h2 class="text-2xl font-bold text-slate-900 mt-1">What Every SAT 2026 Question Type Is Asking</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Explore question stems, core mechanisms, trap distractor analysis, and practice with Hard-Tier Module 2 questions.</p>
           </div>
 
-          <!-- Controls / Filter -->
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="relative">
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
-              <input type="text" id="questionSearchInput" oninput="filterQuestions()" placeholder="Search question type, skill, or keyword..."
-                     class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+          <!-- Section Switcher Segmented Control -->
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
+              <button onclick="setSubjectFilter('all')" id="btn-sub-all" class="filter-chip active px-3 py-1.5 rounded-lg text-slate-700">All (21)</button>
+              <button onclick="setSubjectFilter('Reading and Writing')" id="btn-sub-rw" class="filter-chip px-3 py-1.5 rounded-lg text-slate-700">Reading & Writing (11)</button>
+              <button onclick="setSubjectFilter('Math')" id="btn-sub-math" class="filter-chip px-3 py-1.5 rounded-lg text-slate-700">Math (10)</button>
             </div>
 
-            <select id="sectionFilterSelect" onchange="filterQuestions()" 
-                    class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="all">All Sections (RW & Math)</option>
-              <option value="Reading and Writing">Reading & Writing Only</option>
-              <option value="Math">Math Only</option>
-            </select>
-
-            <select id="domainFilterSelect" onchange="filterQuestions()" 
-                    class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="all">All Domains</option>
-              <!-- Populated dynamically -->
-            </select>
+            <div class="flex items-center gap-1.5">
+              <button onclick="expandAllQuestionCards(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition" title="Expand All Details">
+                Expand All
+              </button>
+              <button onclick="expandAllQuestionCards(false)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition" title="Collapse All Details">
+                Collapse All
+              </button>
+            </div>
           </div>
-        </div>
-
-        <!-- Quick filter badges -->
-        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span class="text-slate-400 font-medium">Quick Jump:</span>
-          <button onclick="setSectionQuickFilter('Reading and Writing')" class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium transition">Reading & Writing (11 types)</button>
-          <button onclick="setSectionQuickFilter('Math')" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 font-medium transition">Math (10 types)</button>
-          <button onclick="expandAllQuestionCards(true)" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 ml-auto font-medium">Expand All</button>
-          <button onclick="expandAllQuestionCards(false)" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium">Collapse All</button>
         </div>
       </div>
 
-      <!-- Question Cards Grid Container -->
-      <div id="questionsContainer" class="space-y-6">
-        <!-- Rendered dynamically by app.js -->
+      <!-- Ergonomic 2-Column Grid: Sticky Quick-Jump Sidebar + Main Cards Stream -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT COLUMN: Sticky Quick-Navigation Rail (Desktop: 4 cols) -->
+        <div class="lg:col-span-4 space-y-4 sticky-rail hidden lg:block">
+          
+          <!-- Search & Filter Card -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="questionSearchInput" oninput="filterQuestions()" placeholder="Search question type, skill, or stem..."
+                     class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Filter by Domain</label>
+              <select id="domainFilterSelect" onchange="filterQuestions()" 
+                      class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-blue-500">
+                <option value="all">All Domains (8)</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Quick-Jump Index Navigation List -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 text-xs font-bold text-slate-700">
+              <span class="flex items-center gap-1.5"><i data-lucide="list" class="w-4 h-4 text-blue-600"></i> Quick Question Index</span>
+              <span id="quickIndexCount" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">21 Types</span>
+            </div>
+            
+            <div id="quickJumpNavList" class="mt-2 space-y-1 max-h-[50vh] overflow-y-auto pr-1">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Main Cards Stream (Desktop: 8 cols) -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <!-- Mobile search bar -->
+          <div class="lg:hidden bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="mobileSearchInput" oninput="syncMobileSearch(this.value)" placeholder="Search question types..."
+                     class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <!-- Question Cards Container -->
+          <div id="questionsContainer" class="space-y-6">
+            <!-- Populated dynamically by app.js -->
+          </div>
+
+        </div>
+
       </div>
 
     </section>
 
     <!-- ========================================================================= -->
-    <!-- PAGE 3: LEARNER ENTRY & ERROR DIAGNOSTIC TRACKER -->
+    <!-- TAB 3: LEARNER PRACTICE ERROR & WEAKNESS ANALYZER -->
     <!-- ========================================================================= -->
-    <section id="page-tracker" class="space-y-8 hidden">
+    <section id="page-tracker" class="space-y-8 hidden animate-fade-in">
       
-      <!-- Tracker Top Header -->
+      <!-- Top Diagnostic Banner -->
       <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
               <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-600"></i> Weak Spot Diagnostic Hub
             </div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">Learner Practice Error & Weakness Analyzer</h2>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Learner Practice Error & Weakness Analyzer</h2>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
               Log questions you got wrong during practice tests (Bluebook, Khan Academy, or custom drills). 
-              The diagnostic engine calculates your <span class="font-semibold text-rose-600">most frequently missed question types</span> and automatically generates a targeted study plan.
+              The diagnostic engine automatically identifies your <span class="font-bold text-rose-600">most frequently missed question types</span> and prescribes high-yield targeted drill plans.
             </p>
           </div>
 
@@ -487,9 +489,9 @@
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-600"></i>
               Load Realistic Demo Data
             </button>
-            <button onclick="openQuickLogModal()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-500/20 flex items-center gap-1.5 transition">
+            <button onclick="openQuickLogModal()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-500/20 flex items-center gap-1.5 transition active:scale-95">
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              Log New Error
+              Log New Practice Error
             </button>
           </div>
         </div>
@@ -559,18 +561,18 @@
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 class="text-lg font-bold text-slate-900">Logged Mistake History</h3>
+            <h3 class="text-lg font-bold text-slate-900">Logged Mistake Audit History</h3>
             <p class="text-xs text-slate-500">Full audit log of individual practice errors, notes, and takeaways</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <button onclick="exportMistakesJSON()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700 flex items-center gap-1">
+            <button onclick="exportMistakesJSON()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center gap-1 transition">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
             </button>
-            <button onclick="exportMistakesCSV()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700 flex items-center gap-1">
+            <button onclick="exportMistakesCSV()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center gap-1 transition">
               <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export CSV
             </button>
-            <button onclick="clearAllMistakes()" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-medium text-rose-700 flex items-center gap-1">
+            <button onclick="clearAllMistakes()" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-700 flex items-center gap-1 transition">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All
             </button>
           </div>
@@ -617,7 +619,7 @@
       <form id="mistakeForm" onsubmit="handleMistakeSubmit(event)" class="p-6 space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Section / Subject *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Section / Subject *</label>
             <select id="modalSubjectSelect" onchange="updateModalQuestionTypeOptions()" required
                     class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
               <option value="Reading and Writing">Reading and Writing</option>
@@ -626,7 +628,7 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Question Type *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Question Type *</label>
             <select id="modalQuestionTypeSelect" required
                     class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
               <!-- Populated dynamically -->
@@ -636,13 +638,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Practice Source / Test</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Practice Source / Test</label>
             <input type="text" id="modalTestSource" placeholder="e.g. Bluebook Practice Test #4, Module 2"
                    class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Question Number</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Question Number</label>
             <input type="number" id="modalQuestionNumber" placeholder="e.g. 17" min="1" max="54"
                    class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
           </div>
@@ -650,7 +652,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Primary Error Reason *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Primary Error Reason *</label>
             <select id="modalErrorReason" required
                     class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
               <option value="Fell for trap / distractor choice">Fell for trap / distractor choice</option>
@@ -664,7 +666,7 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Confidence Before Answering</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Confidence Before Answering</label>
             <select id="modalConfidence"
                     class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
               <option value="High (Overconfident)">High (Thought it was definitely right)</option>
@@ -675,14 +677,14 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">What Fooled You? (Notes / Description)</label>
-          <textarea id="modalNotes" rows="2" placeholder="e.g. I picked choice C because it sounded scientific, but it didn't address the specific variable in the hypothesis..."
+          <label class="block text-xs font-bold text-slate-700 mb-1">What Fooled You? (Notes / Description)</label>
+          <textarea id="modalNotes" rows="2" placeholder="e.g. I picked choice C because it sounded plausible, but it failed the specific condition in the prompt..."
                     class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Action Takeaway / Fix</label>
-          <input type="text" id="modalActionPlan" placeholder="e.g. Next time, always circle the hypothesis before evaluating choices."
+          <label class="block text-xs font-bold text-slate-700 mb-1">Action Takeaway / Fix</label>
+          <input type="text" id="modalActionPlan" placeholder="e.g. Always circle the hypothesis variable before evaluating choices."
                  class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500">
         </div>
 
@@ -712,7 +714,7 @@
     </div>
   </footer>
 
-  <!-- DATA & APPLICATION SCRIPTS -->
+  <!-- DATA & CONTROLLER SCRIPTS -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
